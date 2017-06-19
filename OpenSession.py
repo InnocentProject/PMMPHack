@@ -8,6 +8,7 @@ from pyraklib.protocol import EncapsulatedPacket
 from pyraklib.protocol import CLIENT_CONNECT_DataPacket
 from pyraklib.protocol import SERVER_HANDSHAKE_DataPacket
 from pyraklib.protocol import CLIENT_HANDSHAKE_DataPacket
+from pyraklib.protocol import CLIENT_DISCONNECT_DataPacket
 from pyraklib.protocol import ACK
 from pyraklib.server import UDPServerSocket
 
@@ -17,7 +18,7 @@ dest_port = 19132
 
 ClientId = 1234567
 
-sock = UDPServerSocket(logging.getLogger("PyRakLib"), src_port, '0.0.0.0')
+sock = UDPServerSocket(logging.getLogger("PyRakLib"), src_port)
 sock.socket.setblocking(True)
 
 #OPEN_CONNECTION_REQUEST_1
@@ -107,5 +108,21 @@ packet2.seqNumber = 2;
 packet2.packets.append(sendPk2.toBinary())
 packet2.encode()
 sock.writePacket(packet2.buffer, dest_ip, dest_port)
+
+#CLIENT_DISCONNECT_DataPacket
+print("CLIENT_DISCONNECT_DataPacket")
+pk3 = CLIENT_DISCONNECT_DataPacket()
+pk3.encode()
+
+sendPk3 = EncapsulatedPacket()
+sendPk3.messageIndex = 2
+sendPk3.reliability = 0
+sendPk3.buffer = pk3.buffer
+
+packet3 = DATA_PACKET_4()
+packet3.seqNumber = 3
+packet3.packets.append(sendPk3.toBinary())
+packet3.encode()
+sock.writePacket(packet3.buffer, dest_ip, dest_port)
 
 print("###########  Finish!!  ###########");
